@@ -1,5 +1,5 @@
 package com.airecruitment.talentsphereai.talentsperesSecurity;
 
-public class talentsperesConfiguration {
+public class TalentsperesConfiguration {
 
 }
