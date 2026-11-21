@@ -1,0 +1,21 @@
+
+.success-message {
+  color: #16834a;
+  background: #eaf8f0;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.error-message {
+  color: #c03945;
+  background: #fff0f0;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.form-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
