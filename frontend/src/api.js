@@ -1,9 +1,18 @@
 import axios from "axios";
 
+const getBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (!envUrl) {
+    return import.meta.env.PROD ? "" : "http://localhost:8080";
+  }
+  if (envUrl.startsWith("http://") || envUrl.startsWith("https://")) {
+    return envUrl;
+  }
+  return `https://${envUrl}`;
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL !== undefined && import.meta.env.VITE_API_URL !== ""
-    ? import.meta.env.VITE_API_URL
-    : (import.meta.env.PROD ? "" : "http://localhost:8080"),
+  baseURL: getBaseUrl(),
 });
 
 api.interceptors.request.use((cfg) => {
