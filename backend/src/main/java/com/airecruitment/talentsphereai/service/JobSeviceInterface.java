@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.airecruitment.talentsphereai.model.Jobs;
 
-public interface jobSeviceInterface {
+public interface JobSeviceInterface {
 
     Jobs saveJob(Jobs job);
 

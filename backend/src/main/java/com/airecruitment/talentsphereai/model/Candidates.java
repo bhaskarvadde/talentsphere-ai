@@ -30,4 +30,6 @@ public class Candidates {
 	    private Integer experienceYears;
 
 	    private String resumeUrl;
+
+	
 }

@@ -9,5 +9,7 @@ import com.airecruitment.talentsphereai.model.Candidates;
 
 @Repository
 public interface CandidateRepo extends JpaRepository<Candidates, Long> {
+
+	Candidates findByUser_UserId(Long userId);
    
 }
