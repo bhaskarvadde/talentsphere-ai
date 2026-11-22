@@ -1,25 +1,11 @@
-# Stage 1: Build React Frontend
-FROM node:20-alpine AS frontend-build
-WORKDIR /app/frontend
-COPY frontend/package*.json ./
-RUN npm ci || npm install
-COPY frontend/ ./
-RUN npm run build
-
-# Stage 2: Build Spring Boot JAR with frontend static assets embedded
-FROM maven:3.9.6-eclipse-temurin-17 AS backend-build
-WORKDIR /app/backend
-COPY backend/pom.xml .
-RUN mvn dependency:go-offline -B || true
-COPY backend/src ./src
-COPY --from=frontend-build /app/frontend/dist ./src/main/resources/static
-RUN mvn clean package -DskipTests
-
-# Stage 3: Lightweight Production JRE
-FROM eclipse-temurin:17-jre-alpine
+FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
-VOLUME /tmp
-COPY --from=backend-build /app/backend/target/recruit-*.jar app.jar
-ENV PORT=8080
+COPY pom.xml .
+COPY src ./src
+RUN mvn -q -DskipTests package
+
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
+ENTRYPOINT ["java","-Xmx350m","-jar","app.jar"]

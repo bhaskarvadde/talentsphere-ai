@@ -25,33 +25,34 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-	private final JwtFilter jwtFilter;
+    private final JwtFilter jwtFilter;
 
-	@Bean
-	SecurityFilterChain chain(HttpSecurity http) throws Exception {
-		http.csrf(c -> c.disable()).cors(Customizer.withDefaults())
-				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.exceptionHandling(
-						e -> e.authenticationEntryPoint((req, res, ex) -> res.sendError(401, "Unauthorized")))
-				.authorizeHttpRequests(a -> a.requestMatchers("/api/auth/**", "/error", "/").permitAll().requestMatchers(HttpMethod.GET, "/api/jobs", "/api/jobs/*").permitAll()
-						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated())
-				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-		return http.build();
-	}
+    @Bean
+    SecurityFilterChain chain(HttpSecurity http) throws Exception {
+        http.csrf(c -> c.disable())
+            .cors(Customizer.withDefaults())
+            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(e -> e.authenticationEntryPoint((req, res, ex) -> res.sendError(401, "Unauthorized")))
+            .authorizeHttpRequests(a -> a
+                .requestMatchers("/api/auth/**", "/error", "/").permitAll()
+                // NEW: Swagger UI and OpenAPI docs are public
+                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .anyRequest().authenticated())
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
 
-	@Bean
-	PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 
-	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration c = new CorsConfiguration();
-		c.setAllowedOriginPatterns(List.of("*"));
-		c.setAllowedMethods(List.of("*"));
-		c.setAllowedHeaders(List.of("*"));
-		UrlBasedCorsConfigurationSource s = new UrlBasedCorsConfigurationSource();
-		s.registerCorsConfiguration("/**", c);
-		return s;
-	}
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration c = new CorsConfiguration();
+        c.setAllowedOriginPatterns(List.of("*"));
+        c.setAllowedMethods(List.of("*"));
+        c.setAllowedHeaders(List.of("*"));
+        UrlBasedCorsConfigurationSource s = new UrlBasedCorsConfigurationSource();
+        s.registerCorsConfiguration("/**", c);
+        return s;
+    }
 }
